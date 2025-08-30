@@ -11,7 +11,7 @@ metadata:
   label:
     en_US: LangBotPluginBox
     zh_Hans: LangBot插件盒子
-  icon: assets/icon.svg
+  icon: assets/icon.png
 spec:
   config: []
   components:

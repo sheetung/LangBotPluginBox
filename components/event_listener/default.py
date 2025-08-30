@@ -167,11 +167,11 @@ class DefaultEventListener(EventListener):
             
             # 如果没有找到对应的模块，返回错误信息
             if module_file is None:
-                await event_context.reply(
-                    platform_message.MessageChain([
-                        platform_message.Plain(text=f"未找到关键词 '{keyword}' 对应的功能"),
-                    ])
-                )
+                # await event_context.reply(
+                #     platform_message.MessageChain([
+                #         platform_message.Plain(text=f"未找到关键词 '{keyword}' 对应的功能"),
+                #     ])
+                # )
                 return
                 
             # 动态导入对应的功能模块
