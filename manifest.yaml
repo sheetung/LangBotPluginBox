@@ -4,7 +4,7 @@ metadata:
   author: sheetung
   name: LangBotPluginBox
   repository: https://github.com/sheetung/LangBotPluginBox
-  version: 0.2.0
+  version: 0.2.1
   description:
     en_US: LangBot some small plugins
     zh_Hans: Lang一些小功能插件集合
