@@ -3,18 +3,21 @@ kind: Plugin
 metadata:
   author: sheetung
   name: LangBotPluginBox
-  repository: ''
-  version: 0.1.0
+  repository: https://github.com/sheetung/LangBotPluginBox
+  version: 0.2.0
   description:
-    en_US: 'Lang一些小功能插件集合'
-    zh_Hans: 'Lang一些小功能插件集合'
+    en_US: LangBot some small plugins
+    zh_Hans: Lang一些小功能插件集合
   label:
     en_US: LangBotPluginBox
-    zh_Hans: LangBotPluginBox
-  icon: assets/icon.svg  # replace in assets/icon.svg
+    zh_Hans: LangBot插件盒子
+  icon: assets/icon.svg
 spec:
   config: []
-  components: {}
+  components:
+    EventListener:
+      fromDirs:
+      - path: components/event_listener/
 execution:
   python:
     path: main.py
