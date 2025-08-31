@@ -1,11 +1,22 @@
-# echo.py - 回显功能模块
+# test.py - 测试功能模块
 
 from langbot_plugin.api.entities import context
-from typing import List
+from typing import List, Dict
 
-# 功能描述和触发关键词
-KEYWORD = "测试"
-DESCRIPTION = "测试功能，回显用户输入的内容"
+# 使用get_info()函数提供模块信息
+def get_info() -> Dict[str, str]:
+    """
+    获取模块信息
+    
+    Returns:
+        Dict[str, str]: 包含模块信息的字典，至少包含keyword和description
+    """
+    return {
+        "keyword": "测试",
+        "description": "测试功能，回显用户输入的内容",
+        "usage": "测试 内容",
+        "example": "测试 Hello World"
+    }
 
 async def execute(event_context: context.EventContext, args: List[str]) -> str:
     """

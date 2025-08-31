@@ -8,18 +8,13 @@ LangBot插件，实现一些不需要独立制作插件的小功能集合
 
 核心文件在`core`目录下
 
-目前包括`help.py`,用来遍历`func`目录下的插件,可修改`help.py`下的关键词更改触发
 
 参照目录`func`中示例代码的使用
 
 ！！！除非必要，`core`下文件不要修改
 
 ```python
-# 触发关键词，支持英文和中文触发
-KEYWORD = "calc"
 
-# 功能描述，会在插件列表中显示
-DESCRIPTION = "简单计算器，支持加减乘除"
 
 # 主要功能在execute函数中实现
 async def execute(event_context: context.EventContext, args: List[str]) -> str:
@@ -52,6 +47,7 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
 ## 开发进度
 
 - [ ] 完善其他插件小功能
+- [x] 增强功能插件的触发方式
 - [x] 完成基础功能开发
 
 ## 问题反馈及功能开发

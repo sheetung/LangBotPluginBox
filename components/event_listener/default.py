@@ -10,6 +10,17 @@ import importlib.util
 import sys
 import re
 
+# 导入模块加载器
+import sys
+import os
+
+# 添加项目根目录到Python路径
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from core import module_loader
+
 
 class DefaultEventListener(EventListener):
 
@@ -46,51 +57,14 @@ class DefaultEventListener(EventListener):
             
             # 分割消息，获取关键词和参数
             # 首先获取所有可用的关键词
-            available_keywords = []
+            available_keywords = module_loader.get_available_keywords()
             
             # 获取项目根目录
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            base_dir = module_loader.get_base_dir()
             
-            # 获取core目录中的关键词
+            # 获取目录路径
             core_dir = os.path.join(base_dir, 'core')
-            if os.path.exists(core_dir):
-                for file in os.listdir(core_dir):
-                    if file.endswith(".py") and file != "__init__.py":
-                        try:
-                            # 动态导入模块以获取KEYWORD
-                            module_name = file[:-3]
-                            spec = importlib.util.spec_from_file_location(module_name, os.path.join(core_dir, file))
-                            module = importlib.util.module_from_spec(spec)
-                            spec.loader.exec_module(module)
-                            if hasattr(module, 'KEYWORD'):
-                                available_keywords.append(module.KEYWORD)
-                            else:
-                                available_keywords.append(module_name)
-                        except Exception as e:
-                            available_keywords.append(file[:-3])
-                            print(f"Error loading keyword from {file}: {e}")
-            
-            # 获取func目录中的关键词
             func_dir = os.path.join(base_dir, 'func')
-            if os.path.exists(func_dir):
-                for file in os.listdir(func_dir):
-                    if file.endswith(".py") and file != "__init__.py":
-                        try:
-                            # 动态导入模块以获取KEYWORD
-                            module_name = file[:-3]
-                            spec = importlib.util.spec_from_file_location(module_name, os.path.join(func_dir, file))
-                            module = importlib.util.module_from_spec(spec)
-                            spec.loader.exec_module(module)
-                            if hasattr(module, 'KEYWORD'):
-                                available_keywords.append(module.KEYWORD)
-                            else:
-                                available_keywords.append(module_name)
-                        except Exception as e:
-                            available_keywords.append(file[:-3])
-                            print(f"Error loading keyword from {file}: {e}")
-            
-            # 按长度降序排序关键词，以便优先匹配较长的关键词
-            available_keywords.sort(key=len, reverse=True)
             
             # 尝试匹配关键词
             keyword = None
@@ -121,66 +95,30 @@ class DefaultEventListener(EventListener):
             args = args_text.split() if args_text else []
             
             # 查找对应的功能模块文件
-            module_file = None
-            
-            # 优先在core目录中查找
-            if os.path.exists(core_dir):
-                for file in os.listdir(core_dir):
-                    if file.endswith(".py") and file != "__init__.py":
-                        try:
-                            # 动态导入模块以检查KEYWORD
-                            module_name = file[:-3]
-                            spec = importlib.util.spec_from_file_location(module_name, os.path.join(core_dir, file))
-                            module = importlib.util.module_from_spec(spec)
-                            spec.loader.exec_module(module)
-                            if hasattr(module, 'KEYWORD') and module.KEYWORD == keyword:
-                                module_file = os.path.join(core_dir, file)
-                                break
-                        except Exception as e:
-                            print(f"Error checking module {file}: {e}")
-            
-            # 如果在core目录中没有找到，则在func目录中查找
-            if module_file is None and os.path.exists(func_dir):
-                for file in os.listdir(func_dir):
-                    if file.endswith(".py") and file != "__init__.py":
-                        try:
-                            # 动态导入模块以检查KEYWORD
-                            module_name = file[:-3]
-                            spec = importlib.util.spec_from_file_location(module_name, os.path.join(func_dir, file))
-                            module = importlib.util.module_from_spec(spec)
-                            spec.loader.exec_module(module)
-                            if hasattr(module, 'KEYWORD') and module.KEYWORD == keyword:
-                                module_file = os.path.join(func_dir, file)
-                                break
-                        except Exception as e:
-                            print(f"Error checking module {file}: {e}")
-            
-            # 如果仍然没有找到，尝试使用文件名作为关键词
-            if module_file is None:
-                core_file = os.path.join(core_dir, f"{keyword}.py")
-                func_file = os.path.join(func_dir, f"{keyword}.py")
-                
-                if os.path.exists(core_file):
-                    module_file = core_file
-                elif os.path.exists(func_file):
-                    module_file = func_file
+            module_tuple = module_loader.find_module_by_keyword(keyword)
             
             # 如果没有找到对应的模块，返回错误信息
-            if module_file is None:
+            if module_tuple is None:
                 # await event_context.reply(
                 #     platform_message.MessageChain([
                 #         platform_message.Plain(text=f"未找到关键词 '{keyword}' 对应的功能"),
                 #     ])
                 # )
                 return
+            
+            module_file, module_type = module_tuple
                 
             # 动态导入对应的功能模块
+            module = module_loader.load_module(module_file, keyword)
+            if module is None:
+                await event_context.reply(
+                    platform_message.MessageChain([
+                        platform_message.Plain(text=f"加载模块 {keyword} 失败"),
+                    ])
+                )
+                return
+            
             try:
-                spec = importlib.util.spec_from_file_location(keyword, module_file)
-                module = importlib.util.module_from_spec(spec)
-                sys.modules[keyword] = module
-                spec.loader.exec_module(module)
-                
                 # 调用模块中的execute函数
                 if hasattr(module, 'execute'):
                     result = await module.execute(event_context, args)
