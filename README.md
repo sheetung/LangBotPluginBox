@@ -59,6 +59,7 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
 | 菜单 |   菜单   |   显示所有功能   |
 | 测试 |   测试   | 测试中文命令触发 |
 | 回显 |   echo   |   回显用户输入   |
+| 必应每日 |   bing   |   回显用户输入   |
 
 ## 开发进度
 

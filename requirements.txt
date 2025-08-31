@@ -1,2 +1,3 @@
 langbot-plugin
 pyyaml
+requests
