@@ -4,6 +4,7 @@ from langbot_plugin.api.entities import context
 from typing import List, Dict
 import os
 import importlib.util
+from core import feature_disabler
 
 # 使用get_info()函数提供模块信息
 def get_info() -> Dict[str, str]:
@@ -16,8 +17,8 @@ def get_info() -> Dict[str, str]:
     return {
         "keyword": "菜单",
         "description": "显示func目录中所有可用的功能命令，以及核心功能",
-        "usage": "菜单",
-        "example": "菜单"
+        "usage": "菜单 [禁用/启用/禁用列表] [功能名]",
+        "example": "菜单\n菜单 禁用 功能名\n菜单 启用 功能名\n菜单 禁用列表"
     }
 
 async def execute(event_context: context.EventContext, args: List[str]) -> str:
@@ -31,6 +32,46 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
     Returns:
         str: 帮助信息
     """
+    # 处理功能禁用/启用命令
+    if args and len(args) >= 1:
+        # 处理禁用命令
+        if args[0] == "禁用" and len(args) >= 2:
+            feature_name = args[1]
+            # 检查功能是否存在
+            from core.module_loader import find_module_by_keyword
+            # 临时禁用检查，以确定功能是否存在
+            original_is_disabled = feature_disabler.is_disabled(feature_name)
+            if original_is_disabled:
+                return f"功能 '{feature_name}' 已经被禁用"
+            
+            module_tuple = find_module_by_keyword(feature_name)
+            if module_tuple:
+                # 禁用功能
+                result = feature_disabler.disable_feature(feature_name)
+                if result:
+                    return f"已成功禁用功能 '{feature_name}'"
+                else:
+                    return f"禁用功能 '{feature_name}' 失败"
+            else:
+                return f"未找到功能 '{feature_name}'"
+        
+        # 处理启用命令
+        elif args[0] == "启用" and len(args) >= 2:
+            feature_name = args[1]
+            result = feature_disabler.enable_feature(feature_name)
+            if result:
+                return f"已成功启用功能 '{feature_name}'"
+            else:
+                return f"功能 '{feature_name}' 未被禁用或不存在"
+        
+        # 处理查看禁用列表命令
+        elif args[0] == "禁用列表":
+            disabled_list = feature_disabler.get_disabled_features()
+            if disabled_list:
+                return f"当前被禁用的功能：\n" + "\n".join(disabled_list)
+            else:
+                return "没有被禁用的功能"
+    
     # 获取项目根目录
     base_dir = os.path.dirname(os.path.dirname(__file__))
     
@@ -44,7 +85,9 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
     help_text += "核心功能:\n"
     core_dir = os.path.dirname(__file__)
     for file in os.listdir(core_dir):
-        if file.endswith(".py") and file != "__init__.py" and file != "module_loader.py":
+        # 定义排除的文件列表，方便后续添加
+        excluded_files = ["__init__.py", "module_loader.py", "message_processor.py"]
+        if file.endswith(".py") and file not in excluded_files:
             module_name = file[:-3]  # 去掉.py后缀
             
             try:
@@ -107,5 +150,5 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
                     help_text += f"{keyword}: {description}\n"
                 except Exception as e:
                     help_text += f"{module_name}: 加载失败 ({str(e)})\n"
-    
+    help_text += "\n使用 <功能> --help 查看特定功能的使用帮助"
     return help_text

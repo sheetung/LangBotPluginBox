@@ -20,6 +20,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from core import module_loader
+from core import message_processor
 
 
 class DefaultEventListener(EventListener):
@@ -38,7 +39,7 @@ class DefaultEventListener(EventListener):
                     element.text for element in message_chain
                     if isinstance(element, platform_message.Plain)
                 ).strip()
-                
+                # print(f'event message: {event_context.event}')
                 if not message:
                     await event_context.reply(
                         platform_message.MessageChain([
@@ -110,8 +111,34 @@ class DefaultEventListener(EventListener):
             # 查找对应的功能模块文件
             module_tuple = module_loader.find_module_by_keyword(keyword)
             
+            # 如果模块类型为feature_disabler，返回错误信息
+            if module_tuple == 'feature_disabler':
+                await event_context.reply(
+                    platform_message.MessageChain([
+                        platform_message.Plain(text=f"功能 <{keyword}> 已被禁用"),
+                    ])
+                )
+                return
+            
             # 如果没有找到对应的模块，返回错误信息
             if module_tuple is None:
+                return
+            
+            # 检查是否包含--help参数
+            if '--help' in args:
+                # 获取模块信息
+                module_info_dict = module_loader.get_module_info()
+                module_info = module_info_dict.get(keyword, {})
+                usage = module_info.get('usage', '暂无使用说明')
+                description = module_info.get('description', '暂无描述')
+                
+                # 构建帮助信息
+                help_message = f"{keyword} 功能说明：\n{description}\n\n使用方法：\n{usage}"
+                await event_context.reply(
+                    platform_message.MessageChain([
+                        platform_message.Plain(text=help_message),
+                    ])
+                )
                 return
             
             module_file, module_type = module_tuple
@@ -130,10 +157,26 @@ class DefaultEventListener(EventListener):
                 # 调用模块中的execute函数
                 if hasattr(module, 'execute'):
                     result = await module.execute(event_context, args)
+                    # 获取发送者ID event.sender.id
+                    sender_id = str(event_context.event.sender_id)
+                    # 检查模块是否提供了是否需要@用户的配置
+                    need_at = False
+                    if hasattr(module, 'get_info'):
+                        try:
+                            module_info = module.get_info()
+                            if isinstance(module_info, dict) and 'need_at' in module_info:
+                                need_at = bool(module_info['need_at'])
+                        except:
+                            pass
+                    # 使用MessageProcessor处理消息
+                    try:
+                        message_parts = message_processor.MessageProcessor.convert_message(result, sender_id, need_at)
+                    except Exception as e:
+                        # 如果消息处理失败，使用简单文本回复并记录错误
+                        # print(f'Message processing error: {e}')
+                        message_parts = [platform_message.Plain(text=str(result))]
                     await event_context.reply(
-                        platform_message.MessageChain([
-                            platform_message.Plain(text=result),
-                        ])
+                        platform_message.MessageChain(message_parts)
                     )
                 else:
                     await event_context.reply(

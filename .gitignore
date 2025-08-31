@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 /data/
+/config/feature_disabler.json

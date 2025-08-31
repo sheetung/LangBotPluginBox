@@ -4,6 +4,7 @@ import os
 import importlib.util
 import sys
 from typing import List, Dict, Tuple, Optional, Any
+from core import feature_disabler
 
 
 def get_base_dir() -> str:
@@ -209,6 +210,11 @@ def find_module_by_keyword(keyword: str) -> Optional[Tuple[str, str]]:
     仅考虑实现了get_info()函数的模块，排除module_loader自身
     返回格式：(module_file, module_type) 或 None
     """
+    # 首先检查功能是否被禁用
+    if feature_disabler.is_disabled(keyword):
+        print(f"功能 {keyword} 已被禁用")
+        return 'feature_disabler'
+        
     # 获取项目根目录
     base_dir = get_base_dir()
     core_dir = os.path.join(base_dir, 'core')

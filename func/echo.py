@@ -14,7 +14,8 @@ def get_info() -> Dict[str, str]:
     return {
         "keyword": "echo",
         "description": "回显用户输入的内容",
-        "usage": "echo 你好世界"
+        "usage": "echo 你好世界",
+        "need_at": True
     }
 
 async def execute(event_context: context.EventContext, args: List[str]) -> str:
