@@ -14,8 +14,7 @@ def get_info() -> Dict[str, str]:
     return {
         "keyword": "calc",
         "description": "简单计算器，支持加减乘除",
-        "usage": "calc 1+2*3",
-        "example": "calc 10/2+5"
+        "usage": "calc 1+2*3"
     }
 
 async def execute(event_context: context.EventContext, args: List[str]) -> str:

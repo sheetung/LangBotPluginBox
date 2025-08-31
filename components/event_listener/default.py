@@ -70,12 +70,25 @@ class DefaultEventListener(EventListener):
             keyword = None
             args_text = ""
             
+            # 获取所有模块信息，用于检查keyword和usage是否相等
+            module_info = module_loader.get_module_info()
+            
             for kw in available_keywords:
-                # 对于中文和英文都进行不区分大小写的匹配
-                if message.lower().startswith(kw.lower()) or message.startswith(kw):
-                    keyword = kw
-                    args_text = message[len(kw):].strip()
-                    break
+                # 获取该模块的usage信息
+                module_usage = module_info.get(kw, {}).get('usage', '')
+                
+                # 如果keyword等于usage，说明该功能不需要传参，只有当消息完全等于keyword时才触发
+                if kw == module_usage:
+                    if message.lower() == kw.lower() or message == kw:
+                        keyword = kw
+                        args_text = ""
+                        break
+                # 否则，保留原有的以keyword开头就触发的逻辑
+                else:
+                    if message.lower().startswith(kw.lower()) or message.startswith(kw):
+                        keyword = kw
+                        args_text = message[len(kw):].strip()
+                        break
             
             # 如果没有匹配到关键词，尝试使用空格分割
             if keyword is None:
@@ -99,11 +112,6 @@ class DefaultEventListener(EventListener):
             
             # 如果没有找到对应的模块，返回错误信息
             if module_tuple is None:
-                # await event_context.reply(
-                #     platform_message.MessageChain([
-                #         platform_message.Plain(text=f"未找到关键词 '{keyword}' 对应的功能"),
-                #     ])
-                # )
                 return
             
             module_file, module_type = module_tuple
