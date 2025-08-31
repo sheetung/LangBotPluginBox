@@ -64,7 +64,7 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
 ## 开发进度
 
 - [ ] 完善其他插件小功能
-- [ ] 增加启用/禁用功能
+- [x] 增加启用/禁用功能
 - [x] 增加功能help支持
 - [x] 增加对图片的支持 
 - [x] 增强功能插件的触发方式
