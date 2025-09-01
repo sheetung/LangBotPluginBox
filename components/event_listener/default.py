@@ -175,18 +175,41 @@ class DefaultEventListener(EventListener):
                         # 如果消息处理失败，使用简单文本回复并记录错误
                         # print(f'Message processing error: {e}')
                         message_parts = [platform_message.Plain(text=str(result))]
-                    await event_context.reply(
-                        platform_message.MessageChain(message_parts)
-                    )
+                    
+                    # 添加健壮的回复逻辑，防止查询ID失效导致的错误
+                    try:
+                        await event_context.reply(
+                            platform_message.MessageChain(message_parts)
+                        )
+                    except Exception as e:
+                        # 捕获查询ID未找到的错误
+                        if "Query with query_id" in str(e) and "not found" in str(e):
+                            print(f"警告: 尝试回复时查询ID已失效 - {str(e)}")
+                            # 可以选择记录日志或不做任何操作，避免继续抛出异常
+                        else:
+                            # 其他错误仍然需要处理
+                            print(f"回复消息时发生其他错误: {str(e)}")
                 else:
+                    try:
+                        await event_context.reply(
+                            platform_message.MessageChain([
+                                platform_message.Plain(text=f"模块 {keyword} 中没有找到execute函数"),
+                            ])
+                        )
+                    except Exception as reply_error:
+                        if "Query with query_id" in str(reply_error) and "not found" in str(reply_error):
+                            print(f"警告: 尝试回复时查询ID已失效 - {str(reply_error)}")
+                        else:
+                            print(f"回复消息时发生其他错误: {str(reply_error)}")
+            except Exception as e:
+                try:
                     await event_context.reply(
                         platform_message.MessageChain([
-                            platform_message.Plain(text=f"模块 {keyword} 中没有找到execute函数"),
+                            platform_message.Plain(text=f"执行功能时出错: {str(e)}"),
                         ])
                     )
-            except Exception as e:
-                await event_context.reply(
-                    platform_message.MessageChain([
-                        platform_message.Plain(text=f"执行功能时出错: {str(e)}"),
-                    ])
-                )
+                except Exception as reply_error:
+                    if "Query with query_id" in str(reply_error) and "not found" in str(reply_error):
+                        print(f"警告: 尝试回复时查询ID已失效 - {str(reply_error)}")
+                    else:
+                        print(f"回复消息时发生其他错误: {str(reply_error)}")

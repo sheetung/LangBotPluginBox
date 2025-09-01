@@ -60,6 +60,8 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
 | 测试 |   测试   | 测试中文命令触发 |
 | 回显 |   echo   |   回显用户输入   |
 | 必应每日 |   bing   |   必应每日壁纸   |
+| 看妹妹   |   看妹妹   |   随机美女图片   |
+| 摸头   |   摸头   |   摸头qq头像   |
 
 ## 开发进度
 

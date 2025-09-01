@@ -86,7 +86,8 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
     core_dir = os.path.dirname(__file__)
     for file in os.listdir(core_dir):
         # 定义排除的文件列表，方便后续添加
-        excluded_files = ["__init__.py", "module_loader.py", "message_processor.py"]
+        excluded_files = ["__init__.py", "module_loader.py", 
+                        "message_processor.py", "feature_disabler.py"]   
         if file.endswith(".py") and file not in excluded_files:
             module_name = file[:-3]  # 去掉.py后缀
             
