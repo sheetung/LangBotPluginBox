@@ -204,7 +204,7 @@ def get_module_info() -> Dict[str, Dict[str, str]]:
     return module_info
 
 
-def find_module_by_keyword(keyword: str) -> Optional[Tuple[str, str]]:
+def find_module_by_keyword(keyword: str, admin_id: str = None, sender_id: str = None) -> Optional[Tuple[str, str]]:
     """
     根据关键词查找对应的模块文件
     仅考虑实现了get_info()函数的模块，排除module_loader自身

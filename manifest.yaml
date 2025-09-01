@@ -4,16 +4,23 @@ metadata:
   author: sheetung
   name: LangBotPluginBox
   repository: https://github.com/sheetung/LangBotPluginBox
-  version: 0.5.6
+  version: 0.7.1
   description:
     en_US: LangBot some small plugins
     zh_Hans: Lang一些小功能插件集合
   label:
     en_US: LangBotPluginBox
-    zh_Hans: LangBot插件盒子
+    zh_Hans: LangBotPluginBox
   icon: assets/icon.png
 spec:
-  config: []
+  config:
+    - name: boxadmin_id_
+      type: string
+      label:
+        en_US: 'Admin QQ'
+        zh_Hans: '管理员QQ'
+      required: true
+      default: '' 
   components:
     EventListener:
       fromDirs:

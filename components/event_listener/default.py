@@ -10,10 +10,6 @@ import importlib.util
 import sys
 import re
 
-# 导入模块加载器
-import sys
-import os
-
 # 添加项目根目录到Python路径
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if project_root not in sys.path:
@@ -27,10 +23,11 @@ class DefaultEventListener(EventListener):
 
     async def initialize(self):
         await super().initialize()
-        
+
         @self.handler(events.PersonMessageReceived)
         @self.handler(events.GroupMessageReceived)
         async def handler(event_context: context.EventContext):
+            admin_id_ = self.plugin.get_config().get("boxadmin_id_", None)
             # 获取消息内容
             try:
                 # 根据其他插件的实现，正确获取消息内容
@@ -107,10 +104,10 @@ class DefaultEventListener(EventListener):
             
             # 将参数文本分割为参数列表
             args = args_text.split() if args_text else []
-            
+            # 获取发送者ID
+            sender_id = str(event_context.event.sender_id)
             # 查找对应的功能模块文件
             module_tuple = module_loader.find_module_by_keyword(keyword)
-            
             # 如果模块类型为feature_disabler，返回错误信息
             if module_tuple == 'feature_disabler':
                 await event_context.reply(
@@ -123,6 +120,34 @@ class DefaultEventListener(EventListener):
             # 如果没有找到对应的模块，返回错误信息
             if module_tuple is None:
                 return
+            
+            # 管理员权限验证 - 针对菜单的启用/禁用功能
+            if keyword == "菜单" and args and len(args) > 0:
+                # 检查是否是启用或禁用命令
+                if args[0] in ["启用", "禁用"] and len(args) >= 2:
+                    if admin_id_ == None:
+                        await event_context.reply(
+                            platform_message.MessageChain([
+                                platform_message.Plain(text="管理员ID未配置,请先配置管理员ID")
+                            ])
+                        )
+                        return
+                    # 验证管理员权限
+                    if sender_id != admin_id_:
+                        # 添加健壮的回复逻辑，防止查询ID失效导致的错误
+                        try:
+                            await event_context.reply(
+                                platform_message.MessageChain([
+                                    platform_message.Plain(text="你不是管理员，无权执行此操作"),
+                                ])
+                            )
+                        except Exception as e:
+                            # 捕获查询ID未找到的错误
+                            if "Query with query_id" in str(e) and "not found" in str(e):
+                                print(f"警告: 尝试回复时查询ID已失效 - {str(e)}")
+                            else:
+                                print(f"回复消息时发生其他错误: {str(e)}")
+                        return
             
             # 检查是否包含--help参数
             if '--help' in args:

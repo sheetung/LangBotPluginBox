@@ -6,10 +6,8 @@ from langbot_plugin.api.definition.plugin import BasePlugin
 
 class LangBotPluginBox(BasePlugin):
 
-    async def initialize(self) -> None:
-        # Will be called when plugin is launching
-        pass
+    def __init__(self):
+        super().__init__()
 
-    def __del__(self) -> None:
-        # Will be called when plugin is terminating
+    async def initialize(self) -> None:
         pass
