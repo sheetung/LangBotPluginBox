@@ -21,17 +21,20 @@ def get_info() -> Dict[str, str]:
         "example": "菜单\n菜单 禁用 功能名\n菜单 启用 功能名\n菜单 禁用列表"
     }
 
-async def execute(event_context: context.EventContext, args: List[str]) -> str:
+async def execute(event_context: context.EventContext, request_dict: Dict) -> str:
     """
     执行帮助功能，列出所有可用的功能命令
     
     Args:
         event_context: 事件上下文
-        args: 参数列表
+        request_dict: 包含请求信息的字典
         
     Returns:
         str: 帮助信息
     """
+    # 从request_dict中获取参数列表
+    args = request_dict.get('args', [])
+    
     # 处理功能禁用/启用命令
     if args and len(args) >= 1:
         # 处理禁用命令

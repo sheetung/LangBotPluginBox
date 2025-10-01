@@ -29,30 +29,22 @@ class DefaultEventListener(EventListener):
         async def handler(event_context: context.EventContext):
             admin_id_ = self.plugin.get_config().get("boxadmin_id_", None)
             # 获取消息内容
-            try:
-                # 根据其他插件的实现，正确获取消息内容
-                message_chain = event_context.event.message_chain
-                message = "".join(
-                    element.text for element in message_chain
-                    if isinstance(element, platform_message.Plain)
-                ).strip()
-                # print(f'event message: {event_context.event}')
-                if not message:
-                    await event_context.reply(
-                        platform_message.MessageChain([
-                            platform_message.Plain(text=f"请输入有效的消息内容"),
-                        ])
-                    )
-                    return
-            except Exception as e:
-                print(f"获取消息内容时出错: {str(e)}")
-                await event_context.reply(
-                    platform_message.MessageChain([
-                        platform_message.Plain(text=f"获取消息内容时出错: {str(e)}"),
-                    ])
-                )
-                return
+            message_chain = event_context.event.message_chain
+            message = "".join(
+                element.text for element in message_chain
+                if isinstance(element, platform_message.Plain)
+            ).strip()
             
+            # 提取@元素信息并添加到args_text中
+            at_mentions = []
+            for element in message_chain:
+                if isinstance(element, platform_message.At):
+                    at_mentions.append(f"@{element.target}")
+                    
+            # 如果有@元素，将它们添加到消息前面
+            if at_mentions:
+                message = message + " ".join(at_mentions)
+            # print(f'event message: {message}\n message_chain: {message_chain}')
             # 分割消息，获取关键词和参数
             # 首先获取所有可用的关键词
             available_keywords = module_loader.get_available_keywords()
@@ -92,11 +84,11 @@ class DefaultEventListener(EventListener):
             if keyword is None:
                 words = message.strip().split()
                 if not words:
-                    await event_context.reply(
-                        platform_message.MessageChain([
-                            platform_message.Plain(text=f"请输入有效的消息内容"),
-                        ])
-                    )
+                    # await event_context.reply(
+                    #     platform_message.MessageChain([
+                    #         platform_message.Plain(text=f"请输入有效的消息内容"),
+                    #     ])
+                    # )
                     return
                 
                 keyword = words[0]
@@ -104,7 +96,7 @@ class DefaultEventListener(EventListener):
             
             # 将参数文本分割为参数列表
             args = args_text.split() if args_text else []
-            # 获取发送者ID
+            # 获取发送者ID并添加到参数列表中
             sender_id = str(event_context.event.sender_id)
             # 查找对应的功能模块文件
             module_tuple = module_loader.find_module_by_keyword(keyword)
@@ -181,7 +173,16 @@ class DefaultEventListener(EventListener):
             try:
                 # 调用模块中的execute函数
                 if hasattr(module, 'execute'):
-                    result = await module.execute(event_context, args)
+                    # 创建参数字典，包含请求内容和请求者ID
+                    request_dict = {
+                        'args': args,  # 原始参数列表
+                        'args_text': args_text,  # 原始参数字符串
+                        'sender_id': sender_id,  # 请求者ID
+                        'message': message  # 完整消息内容
+                    }
+                    
+                    # 只传递request_dict参数，不再使用args
+                    result = await module.execute(event_context, request_dict)
                     # 获取发送者ID event.sender.id
                     sender_id = str(event_context.event.sender_id)
                     # 检查模块是否提供了是否需要@用户的配置

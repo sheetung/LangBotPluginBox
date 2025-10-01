@@ -17,17 +17,20 @@ def get_info() -> Dict[str, str]:
         "usage": "calc 1+2*3"
     }
 
-async def execute(event_context: context.EventContext, args: List[str]) -> str:
+async def execute(event_context: context.EventContext, request_dict) -> str:
     """
     执行计算器功能，计算简单的数学表达式
     
     Args:
         event_context: 事件上下文
-        args: 参数列表
+        request_dict: 请求字典，包含args、args_text、sender_id、message等信息
         
     Returns:
         str: 计算结果
     """
+    # 从request_dict中获取参数列表
+    args = request_dict.get('args', [])
+    
     if not args:
         return "请输入要计算的表达式，例如: calc 1 + 2"
     

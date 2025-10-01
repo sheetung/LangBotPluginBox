@@ -17,19 +17,20 @@ def get_info() -> Dict[str, str]:
         "example": "bing\nbing 0 1920×1080\nbing 1"
     }
 
-async def execute(event_context: context.EventContext, args: List[str]) -> str:
+async def execute(event_context: context.EventContext, request_dict) -> str:
     """
     执行Bing图片获取功能
     
     Args:
         event_context: 事件上下文
-        args: 参数列表，可选参数：
-              - day: 表示获取哪一天的图片，0表示今天，1表示昨天，最多支持7天
-              - size: 表示图片大小，如1920×1080
-    
+        request_dict: 请求字典，包含args、args_text、sender_id、message等信息
+        
     Returns:
         str: 包含图片链接的消息
     """
+    # 从request_dict中获取参数列表
+    args = request_dict.get('args', [])
+    
     # 解析参数
     day = 0  # 默认获取今天的图片
     size = None  # 默认使用API返回的大小

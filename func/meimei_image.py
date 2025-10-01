@@ -2,7 +2,8 @@ import httpx
 import asyncio
 import re  # 用于提取数字
 from langbot_plugin.api.entities import context
-from typing import List, Dict
+from typing import Dict
+import httpx
 
 # 使用get_info()函数提供模块信息
 def get_info() -> Dict[str, str]:
@@ -42,17 +43,20 @@ async def fetch_color_image(max_retries=3):
             return error_msg
         await asyncio.sleep(1)
 
-async def execute(event_context: context.EventContext, args: List[str]) -> str:
+async def execute(event_context: context.EventContext, request_dict) -> str:
     """
     执行获取随机图片功能
     
     Args:
         event_context: 事件上下文
-        args: 参数列表，支持指定获取数量
+        request_dict: 请求字典，包含args、args_text、sender_id、message等信息
         
     Returns:
         str: 包含图片链接的Markdown格式文本
     """
+    # 从request_dict中获取参数列表
+    args = request_dict.get('args', [])
+    
     ssnum = 10  # 最大图片数量限制
     n = 1  # 默认获取1张图片
     # 解析请求次数参数（支持 x10、10次 等格式）

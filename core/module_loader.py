@@ -296,10 +296,13 @@ def load_module(module_file: str, keyword: str):
         return None
 
 
-async def execute(event_context, args: List[str]) -> str:
+async def execute(event_context, request_dict) -> str:
     """
     执行模块加载器功能
     """
+    # 从request_dict中获取参数列表
+    args = request_dict.get('args', [])
+    
     if not args:
         return "模块加载器：请提供要执行的操作，如 list, info, load"
     

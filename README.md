@@ -33,13 +33,13 @@ def get_info() -> Dict[str, str]:
     }
 
 # 主要功能在execute函数中实现
-async def execute(event_context: context.EventContext, args: List[str]) -> str:
+async def execute(event_context: context.EventContext, request_dict) -> str:
     """
     执行主要功能
 
     Args:
         event_context: 事件上下文
-        args: 参数列表
+        request_dict: 请求字典，包含args、args_text、sender_id、message等信息
 
     Returns:
         str: 执行结果
@@ -66,7 +66,8 @@ async def execute(event_context: context.EventContext, args: List[str]) -> str:
 ## 开发进度
 
 - [ ] 完善其他插件小功能
-- [ ] 增加管理员功能
+- [x] 传参使用字典方法
+- [x] 增加管理员功能
 - [x] 增加启用/禁用功能
 - [x] 增加功能help支持
 - [x] 增加对图片的支持 
