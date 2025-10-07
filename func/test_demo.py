@@ -35,25 +35,23 @@ async def execute(event_context: context.EventContext, request_dict: Dict) -> st
     sender_id = request_dict.get('sender_id', '')
     message = request_dict.get('message', '')
     
-    print(f'test request_dict: {request_dict}')
-    print(f'test args: {args}')
-    print(f'test sender_id: {sender_id}')
+    # print(f'test request_dict: {request_dict}')
+    # print(f'test args: {args}')
+    # print(f'test sender_id: {sender_id}')
     
     # 示例图片URL（使用网络上的公开图片）
     example_image_url = "https://static.moontung.top/2024/202405141832929.jpeg"
     
-    if not args:
-        # 如果没有参数，返回默认的文本和图片组合
-        # 使用括号和字符串连接实现多行字符串
-        return (
-            f"本地图片示例：![本地图片](/home/sheetung/langbot-plugin-all/LangBotPluginBox/assets/icon.png)\n"
-            f"这是一个测试消息，包含文本和图片：\n"
-            f"网络示例图片1：![示例图片]({example_image_url})\n"
-            f"文本2\n"
-            f"网络示例图片2：![示例图片]({example_image_url})\n"
-            f"\n注意：此模块已更新为使用request_dict参数\n"
-        )
-    
-    # 如果有参数，返回参数内容加上图片
-    args_content = " ".join(args)
-    return f"\n测试结果: {args_content}\n包含一张示例图片：![示例图片]({example_image_url})\n{args_content}\n发送者ID: {sender_id}\n\n注意：此模块已更新为使用request_dict参数\n"
+    if args:
+        # 如果有参数，返回参数内容加上图片
+        args_content = " ".join(args)
+    else:
+        args_content = "无传入参数"
+    return (
+        f"这是一个测试消息，包含文本和图片：\n"
+        f"传入参数为：{args_content}\n"
+        f"网络示例图片1：![示例图片]({example_image_url})\n"
+        f"文本2\n"
+        f"网络示例图片2：![示例图片]({example_image_url})\n"
+        f"本地图片示例：![本地图片](/home/sheetung/langbot-plugin-all/LangBotPluginBox/assets/icon.png)\n"
+    )
