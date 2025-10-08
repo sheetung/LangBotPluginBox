@@ -24,10 +24,11 @@ class DefaultEventListener(EventListener):
     async def initialize(self):
         await super().initialize()
 
+        self.admin_id = self.plugin.get_config().get("boxadmin_id", None)
+        self.weather_key = self.plugin.get_config().get("weather_key", None)
         @self.handler(events.PersonMessageReceived)
         @self.handler(events.GroupMessageReceived)
         async def handler(event_context: context.EventContext):
-            admin_id_ = self.plugin.get_config().get("boxadmin_id_", None)
             # 获取消息内容
             message_chain = event_context.event.message_chain
             message = "".join(
@@ -44,7 +45,6 @@ class DefaultEventListener(EventListener):
             # 如果有@元素，将它们添加到消息前面
             if at_mentions:
                 message = message + " ".join(at_mentions)
-            # print(f'event message: {message}\n message_chain: {message_chain}')
             # 分割消息，获取关键词和参数
             # 首先获取所有可用的关键词
             available_keywords = module_loader.get_available_keywords()
@@ -117,7 +117,7 @@ class DefaultEventListener(EventListener):
             if keyword == "菜单" and args and len(args) > 0:
                 # 检查是否是启用或禁用命令
                 if args[0] in ["启用", "禁用"] and len(args) >= 2:
-                    if admin_id_ == None:
+                    if self.admin_id == None:
                         await event_context.reply(
                             platform_message.MessageChain([
                                 platform_message.Plain(text="管理员ID未配置,请先配置管理员ID")
@@ -125,7 +125,7 @@ class DefaultEventListener(EventListener):
                         )
                         return
                     # 验证管理员权限
-                    if sender_id != admin_id_:
+                    if sender_id != self.admin_id:
                         # 添加健壮的回复逻辑，防止查询ID失效导致的错误
                         try:
                             await event_context.reply(
@@ -180,6 +180,10 @@ class DefaultEventListener(EventListener):
                         'sender_id': sender_id,  # 请求者ID
                         'message': message  # 完整消息内容
                     }
+                    
+                    # 如果是天气功能，添加weather_key参数
+                    if keyword == "天气":
+                        request_dict['weather_key'] = self.weather_key
                     
                     # 只传递request_dict参数，不再使用args
                     result = await module.execute(event_context, request_dict)
