@@ -64,13 +64,13 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | 功能 | 触发命令 |       描述       |
 | :--: | :------: | :--------------: |
 | 菜单 |   菜单   |   显示所有功能   |
-| 测试 |   测试   | 测试文本以及图片功能 |
 | 必应每日 |   bing   |   必应每日壁纸   |
 | 看妹妹   |   看妹妹   |   随机美女图片   |
 | 摸头   |   摸头   |   摸头qq头像   |
 | kfc   |   kfc   |   随机疯狂星期四   |
 | 天气   |   天气   |   和风天气API密钥，[链接](https://console.qweather.com/home?lang=zh)  |
 | req_demo   |   req_demo   |   测试传参功能   |
+| 测试 |   测试   | 测试文本以及图片功能 |
 
 ## 开发进度
 

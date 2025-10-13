@@ -26,6 +26,7 @@ class DefaultEventListener(EventListener):
 
         self.admin_id = self.plugin.get_config().get("boxadmin_id", None)
         self.weather_key = self.plugin.get_config().get("weather_key", None)
+        self.menu_url = self.plugin.get_config().get("menu_url", None)
         @self.handler(events.PersonMessageReceived)
         @self.handler(events.GroupMessageReceived)
         async def handler(event_context: context.EventContext):
@@ -112,7 +113,14 @@ class DefaultEventListener(EventListener):
             # 如果没有找到对应的模块，返回错误信息
             if module_tuple is None:
                 return
-            
+            # 如果为关键词为菜单且menu_url不为空，返回menu_url
+            if keyword == "菜单" and self.menu_url:
+                await event_context.reply(
+                    platform_message.MessageChain([
+                        platform_message.Image(url=self.menu_url),
+                    ])
+                )
+                return
             # 管理员权限验证 - 针对菜单的启用/禁用功能
             if keyword == "菜单" and args and len(args) > 0:
                 # 检查是否是启用或禁用命令

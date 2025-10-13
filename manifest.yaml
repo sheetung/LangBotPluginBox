@@ -4,7 +4,7 @@ metadata:
   author: sheetung
   name: LangBotPluginBox
   repository: https://github.com/sheetung/LangBotPluginBox
-  version: 0.8.7
+  version: 0.8.8
   description:
     en_US: LangBot some small plugins
     zh_Hans: Lang一些小功能插件集合
@@ -27,6 +27,13 @@ spec:
         en_US: 'Weather API Key'
         zh_Hans: '和风天气API密钥，[链接](https://console.qweather.com/home?lang=zh)'
       required: true
+      default: ''
+    - name: menu_url
+      type: string
+      label:
+        en_US: 'Menu image URL'
+        zh_Hans: '菜单命令图片展示URL'
+      required: false
       default: ''
   components:
     EventListener:
