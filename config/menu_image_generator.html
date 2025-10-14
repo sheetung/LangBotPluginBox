@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <title>西塘菜单（可编辑）</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC','Hiragino Sans GB','Microsoft YaHei',Arial;background:#f3f4f6}
+    .bg-layer{position:fixed;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;filter:brightness(.85);transition:filter .25s ease, transform .25s ease;}
+    .bg-layer.dim{filter:brightness(.55)}
+    .overlay{position:fixed;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15));pointer-events:none;}
+    .app{position:relative;z-index:2;max-width:480px;margin:18px auto;padding:12px;width:94%;min-height:calc(100vh - 56px);display:flex;flex-direction:column;gap:10px}
+    .top{display:flex;align-items:center;gap:12px}
+    .title-wrap{flex:1}
+    .title{color:#ffffff;font-weight:800;line-height:1.05;letter-spacing:0.4px;font-size:clamp(20px,6vw,28px);text-shadow:0 2px 12px rgba(0,0,0,0.35)}
+    .subtitle{font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px;opacity:0.95}
+    h2{color:rgba(255,255,255,0.85);font-size:14px;margin:12px 0 6px 0;font-weight:600}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));border-radius:10px;padding:8px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.95);box-shadow:0 4px 10px rgba(2,6,23,0.22);display:flex;gap:8px;align-items:center}
+    .card .content{flex:1}
+    .card .name{font-size:13px;font-weight:700;margin-bottom:3px}
+    .card .desc{font-size:11px;color:rgba(255,255,255,0.82)}
+    .footer{margin-top:auto;padding:8px 12px;text-align:center;font-size:12px;color:rgba(255,255,255,0.85);opacity:0.95}
+    .toolbar{position:fixed;right:12px;bottom:12px;z-index:3;display:flex;flex-direction:column;gap:8px}
+    .btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.08);padding:10px 12px;border-radius:10px;color:white;font-weight:600;backdrop-filter:blur(8px);cursor:pointer}
+    .small{padding:8px 10px;font-size:13px}
+    [contenteditable]{outline:none}
+    @media(min-width:720px){.cards{grid-template-columns:repeat(3,1fr)}}
+    .light-mode .card{background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.75));color:#0b1220;border:1px solid rgba(11,18,32,0.06);box-shadow:0 6px 18px rgba(11,18,32,0.06)}
+    .light-mode .title{color:#0b1220;text-shadow:none}
+    .light-mode .footer{color:rgba(11,18,32,0.7)}
+  </style>
+</head>
+<body>
+  <div id="bg" class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600&auto=format&fit=crop');"></div>
+  <div class="overlay"></div>
+  <main class="app" id="app">
+    <header class="top">
+      <div class="title-wrap">
+        <div id="title" class="title" contenteditable="true" spellcheck="false">西塘菜单</div>
+        <div id="subtitle" class="subtitle" contenteditable="true" spellcheck="false">可供编辑 · 点击修改主题或功能名字</div>
+      </div>
+    </header>
+    <h2 contenteditable="true">主动触发</h2>
+    <section class="cards" id="active-cards">
+      <article class="card"><div class="content"><div class="name" contenteditable="true">招牌小吃</div><div class="desc" contenteditable="true">口味传统，推荐给第一次来访的朋友，风味独特但分量适中。</div></div></article>
+      <article class="card"><div class="content"><div class="name" contenteditable="true">茶饮特选</div><div class="desc" contenteditable="true">手工茶饮，适合搭配小吃，甜度可调，清新解腻。</div></div></article>
+    </section>
+    <h2 contenteditable="true">被动触发</h2>
+    <section class="cards" id="passive-cards">
+      <article class="card"><div class="content"><div class="name" contenteditable="true">传统点心</div><div class="desc" contenteditable="true">采用古法制作，甜而不腻，适合多人分享。</div></div></article>
+    </section>
+    <div class="footer" id="footer">版本 v1.0 · 作者：你的名字（可编辑）</div>
+  </main>
+  <div class="toolbar">
+    <label class="btn small" for="bgfile">更换背景（本地）</label>
+    <input id="bgfile" type="file" accept="image/*" style="display:none">
+    <button id="setUrl" class="btn small">使用图片 URL</button>
+    <button id="addCard" class="btn small">添加菜单卡片</button>
+    <button id="toggleTheme" class="btn small">切换 浅/深 主题</button>
+  </div>
+  <script>
+    const bg=document.getElementById('bg');const bgfile=document.getElementById('bgfile');const setUrl=document.getElementById('setUrl');const addCard=document.getElementById('addCard');
+    const activeCards=document.getElementById('active-cards');const passiveCards=document.getElementById('passive-cards');
+    const footer=document.getElementById('footer');
+    bgfile.addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);bg.style.backgroundImage=`url('${url}')`;setTimeout(()=>URL.revokeObjectURL(url),60000);});
+    setUrl.addEventListener('click',()=>{const url=prompt('请输入图片 URL（以 http/https 开头）:');if(url)bg.style.backgroundImage=`url('${url}')`;});
+    addCard.addEventListener('click',()=>{const tpl=document.querySelector('.card');const clone=tpl.cloneNode(true);clone.querySelectorAll('[contenteditable]').forEach(n=>n.innerText=(n.classList.contains('name')?'新菜单项':'简短描述'));activeCards.appendChild(clone);clone.scrollIntoView({behavior:'smooth',block:'center'});});
+    document.getElementById('toggleTheme').addEventListener('click',()=>{document.body.classList.toggle('light-mode')});
+    footer.addEventListener('dblclick',()=>{const text=prompt('编辑底部信息：',footer.innerText);if(text!==null)footer.innerText=text});
+    const title=document.getElementById('title');function fitTitle(){const max=parseFloat(getComputedStyle(title).fontSize);const len=title.innerText.trim().length||1;const factor=Math.max(0.72,Math.min(1,28/Math.max(14,len)));title.style.fontSize=`calc(${Math.max(18,Math.round(max*factor))}px)`}
+    title.addEventListener('input',fitTitle);window.addEventListener('resize',fitTitle);fitTitle();
+  </script>
+</body>
+</html>

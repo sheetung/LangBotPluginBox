@@ -58,6 +58,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 
 - 不要实现复杂功能，复杂功能更建议独立插件系统
 - ~~还没想好~~
+- 可使用config在html编辑菜单图片并上传图床，将菜单命令改为更优雅的图片展示
 
 ## 插件列表
 
@@ -71,6 +72,12 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | 天气   |   天气   |   和风天气API密钥，[链接](https://console.qweather.com/home?lang=zh)  |
 | req_demo   |   req_demo   |   测试传参功能   |
 | 测试 |   测试   | 测试文本以及图片功能 |
+
+## 适配平台
+
+|    平台    | 状态 |  备注  |
+| :--------: | :--: | :----: |
+| OneBot V11 |  ✅   | Napcat |
 
 ## 开发进度
 

@@ -114,7 +114,7 @@ class DefaultEventListener(EventListener):
             if module_tuple is None:
                 return
             # 如果为关键词为菜单且menu_url不为空，返回menu_url
-            if keyword == "菜单" and self.menu_url:
+            if message == "菜单" and self.menu_url:
                 await event_context.reply(
                     platform_message.MessageChain([
                         platform_message.Image(url=self.menu_url),
