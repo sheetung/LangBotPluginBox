@@ -70,6 +70,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | 摸头   |   摸头   |   摸头qq头像   |
 | kfc   |   kfc   |   随机疯狂星期四   |
 | 天气   |   天气   |   和风天气API密钥，[链接](https://console.qweather.com/home?lang=zh)  |
+| 早报   |   早报   |   每日60s早报图片   |
 | req_demo   |   req_demo   |   测试传参功能   |
 | 测试 |   测试   | 测试文本以及图片功能 |
 
