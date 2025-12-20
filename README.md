@@ -69,7 +69,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | 看妹妹   |   看妹妹   |   随机美女图片   |
 | 摸头   |   摸头   |   摸头qq头像   |
 | kfc   |   kfc   |   随机疯狂星期四   |
-| 天气   |   天气   |   和风天气API密钥，[链接](https://console.qweather.com/home?lang=zh)  |
+| 天气   |   天气   |   和风天气功能，需配置API密钥和API Host（每个开发者独立），[控制台](https://console.qweather.com/home?lang=zh)  |
 | 早报   |   早报   |   每日60s早报图片   |
 | req_demo   |   req_demo   |   测试传参功能   |
 | 测试 |   测试   | 测试文本以及图片功能 |
@@ -91,9 +91,10 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 - [x] 增强功能插件的触发方式
 - [x] 完成基础功能开发
 
-### 已知BUG
+### 更新历史
 
-- [x] 无法解析本地图片
+- V1.0.2  正式版本发布并更新和风天气请求
+- V0.8.11 修复无法图片解析问题
 
 ## 问题反馈及功能开发
 

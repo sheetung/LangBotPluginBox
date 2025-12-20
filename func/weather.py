@@ -34,23 +34,29 @@ async def execute(event_context: context.EventContext, request_dict: Dict) -> st
     
     # 获取天气API密钥（从request_dict中获取）
     weather_key = request_dict.get('weather_key', None)
-    # print(weather_key)
+    # 获取天气API Host（从request_dict中获取）
+    weather_api_host = request_dict.get('weather_host', None)
+
     # 如果没有配置API密钥，提示用户在后台填写
     if not weather_key:
         return "未配置天气API密钥，请在后台插件配置中填写weather_key"
+
+    # 如果没有配置API Host，提示用户在后台填写
+    if not weather_api_host:
+        return "未配置天气API Host，请在后台插件配置中填写weather_api_host（每个开发者有独立的请求地址）"
     
     # 获取城市名称，默认为"贵阳"
     city_name = args[0] if args else "贵阳"
     
     try:
         # 获取Location ID
-        location_id = get_location_id(weather_key, city_name)
+        location_id = get_location_id(weather_key, weather_api_host, city_name)
         if not location_id:
             return f"无法获取城市'{city_name}'的位置信息，请检查城市名称是否正确"
-        
+
         # 获取实时天气和未来三天天气预报
-        realtime_weather = get_realtime_weather(weather_key, location_id)
-        forecast_weather = get_forecast_weather(weather_key, location_id)
+        realtime_weather = get_realtime_weather(weather_key, weather_api_host, location_id)
+        forecast_weather = get_forecast_weather(weather_key, weather_api_host, location_id)
         
         # 处理天气数据并返回结果
         if realtime_weather and forecast_weather:
@@ -62,18 +68,19 @@ async def execute(event_context: context.EventContext, request_dict: Dict) -> st
     except Exception as e:
         return f"获取天气信息时发生错误: {str(e)}"
 
-def get_location_id(api_key, location_name):
+def get_location_id(api_key, api_host, location_name):
     """
     通过GeoAPI获取城市的Location ID
-    
+
     Args:
         api_key: 和风天气API密钥
+        api_host: 和风天气API Host
         location_name: 城市名称
-        
+
     Returns:
         str: Location ID或None（如果获取失败）
     """
-    geoapi_url = "https://geoapi.qweather.com/v2/city/lookup"
+    geoapi_url = f"https://{api_host}/geo/v2/city/lookup"
     params = {
         "key": api_key,
         "location": location_name
@@ -94,18 +101,19 @@ def get_location_id(api_key, location_name):
         print(f"获取Location ID时出错: {str(e)}")
     return None
 
-def get_realtime_weather(api_key, location_id):
+def get_realtime_weather(api_key, api_host, location_id):
     """
     获取实时天气
-    
+
     Args:
         api_key: 和风天气API密钥
+        api_host: 和风天气API Host
         location_id: 城市的Location ID
-        
+
     Returns:
         dict: 实时天气数据或None（如果获取失败）
     """
-    url = "https://api.qweather.com/v7/weather/now"
+    url = f"https://{api_host}/v7/weather/now"
     params = {
         "key": api_key,
         "location": location_id
@@ -124,18 +132,19 @@ def get_realtime_weather(api_key, location_id):
         print(f"获取实时天气时出错: {str(e)}")
     return None
 
-def get_forecast_weather(api_key, location_id):
+def get_forecast_weather(api_key, api_host, location_id):
     """
     获取未来三天天气预报
-    
+
     Args:
         api_key: 和风天气API密钥
+        api_host: 和风天气API Host
         location_id: 城市的Location ID
-        
+
     Returns:
         dict: 天气预报数据或None（如果获取失败）
     """
-    url = "https://api.qweather.com/v7/weather/3d"
+    url = f"https://{api_host}/v7/weather/3d"
     params = {
         "key": api_key,
         "location": location_id

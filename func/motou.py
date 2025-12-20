@@ -1,7 +1,6 @@
-import requests
+import httpx
 from langbot_plugin.api.entities import context
 from typing import Dict
-import requests
 
 # 使用get_info()函数提供模块信息
 def get_info() -> Dict[str, str]:
@@ -22,11 +21,12 @@ async def get_motou_image_url(qq=None):
     api_url = f"https://uapis.cn/api/mt?qq={qq}"
     
     try:
-        response = requests.get(api_url)
-        if response.status_code == 200:
-            return api_url
-        else:
-            return "获取摸头图片失败\n输入的格式是:摸头@好友 或者摸头 1001"
+        async with httpx.AsyncClient() as client:
+            response = await client.get(api_url)
+            if response.status_code == 200:
+                return api_url
+            else:
+                return "获取摸头图片失败\n输入的格式是:摸头@好友 或者摸头 1001"
     except Exception as e:
         return "发生错误喵~"
 
@@ -63,6 +63,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
     # 检查是否获取成功
     if motou_image_url.startswith("http"):
         # 成功获取到图片链接，返回Markdown格式
+        # print(f'摸头link={motou_image_url}')
         return f"![摸头]({motou_image_url})"
     else:
         # 获取失败，返回错误信息

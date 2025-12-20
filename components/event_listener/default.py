@@ -26,10 +26,19 @@ class DefaultEventListener(EventListener):
 
         self.admin_id = self.plugin.get_config().get("boxadmin_id", None)
         self.weather_key = self.plugin.get_config().get("weather_key", None)
+        self.weather_host = self.plugin.get_config().get("weather_api_host", None)
         self.menu_url = self.plugin.get_config().get("menu_url", None)
+        # 分别处理私聊和群聊消息
         @self.handler(events.PersonMessageReceived)
+        async def handle_private_message(event_context: context.EventContext):
+            await process_message(event_context)
+            
         @self.handler(events.GroupMessageReceived)
-        async def handler(event_context: context.EventContext):
+        async def handle_group_message(event_context: context.EventContext):
+            await process_message(event_context)
+            
+        # 共享的消息处理函数
+        async def process_message(event_context: context.EventContext):
             # 获取消息内容
             message_chain = event_context.event.message_chain
             message = "".join(
@@ -192,6 +201,7 @@ class DefaultEventListener(EventListener):
                     # 如果是天气功能，添加weather_key参数
                     if keyword == "天气":
                         request_dict['weather_key'] = self.weather_key
+                        request_dict['weather_host'] = self.weather_host
                     
                     # 只传递request_dict参数，不再使用args
                     result = await module.execute(event_context, request_dict)
@@ -219,6 +229,8 @@ class DefaultEventListener(EventListener):
                         await event_context.reply(
                             platform_message.MessageChain(message_parts)
                         )
+                        event_context.prevent_default()
+                        # event_context.prevent_postorder()
                     except Exception as e:
                         # 捕获查询ID未找到的错误
                         if "Query with query_id" in str(e) and "not found" in str(e):
