@@ -1,68 +1,67 @@
 # LangBotPluginBox
 
-LangBot插件，实现一些不需要独立制作插件的小功能集合
+A LangBot plugin collection that implements small features that don't require independent plugins.
 
-可以在`func`目录下添加自己的小功能
+You can add your own small features in the `func` directory.
 
-## 使用方法
+## Usage
 
-- 使用`菜单`查看所有功能
-    - 菜单 --help 查看菜单详细信息
-- 使用<功能名>  触发对应功能
-- <功能名> --help 查看功能详细信息
+- Use `菜单` (menu) to view all features
+    - 菜单 --help to view menu details
+- Use <function name> to trigger the corresponding function
+- <function name> --help to view function details
 
-## 功能开发
+## Feature Development
 
-核心文件在`core`目录下
+Core files are located in the `core` directory.
 
+Refer to the example code usage in the `func` directory.
 
-参照目录`func`中示例代码的使用
-
-！！！除非必要，`core`下文件不要修改
+!!! Unless necessary, DO NOT modify files under `core`
 
 ```python
-# 使用get_info()函数提供模块信息
+# Use get_info() function to provide module information
 def get_info() -> Dict[str, str]:
     """
-    获取模块信息
-        keyword : 必需 触发指令
-        description : 必需 功能描述
-        usage : 必需 指令使用方法
-        need_at : 可选 是否需要@用户
+    Get module information
+        keyword : Required - trigger command
+        description : Required - feature description
+        usage : Required - command usage
+        need_at : Optional - whether @user is required
     Returns:
-        Dict[str, str]: 包含模块信息的字典，至少包含keyword和description
+        Dict[str, str]: Dictionary containing module info, must include at least keyword and description
     """
     return {
-        "keyword": "测试", 
-        "description": "测试功能，回显用户输入的内容",
-        "usage": "测试 内容",
+        "keyword": "测试",
+        "description": "Test feature, echoes user input",
+        "usage": "测试 content",
         "need_at": True
     }
 
-# 主要功能在execute函数中实现
+# Main functionality is implemented in the execute function
 async def execute(event_context: context.EventContext, request_dict) -> str:
     """
-    执行主要功能
+    Execute main functionality
 
     Args:
-        event_context: 事件上下文
-        request_dict: 请求字典，包含args、args_text、sender_id、message等信息
+        event_context: Event context
+        request_dict: Request dictionary containing args, args_text, sender_id, message etc.
 
     Returns:
-        str: 执行结果
+        str: Execution result
     """
 ```
 
 
-## AI 生成建议
+## AI Generation Suggestions
 
-- 不要实现复杂功能，复杂功能更建议独立插件系统
-- ~~还没想好~~
-- 可使用config在html编辑菜单图片并上传图床，将菜单命令改为更优雅的图片展示
+- Don't implement complex features; complex features are better suited for independent plugin systems
+- ~~Haven't figured it out yet~~
+- You can use config to edit menu images in HTML, upload them to an image hosting service, and change menu commands to more elegant image displays
 
-## 插件列表
+## Plugin List
 
-| 功能 | 触发命令 |       描述       |
+| Feature | Trigger Command | Description |
 | :--: | :------: | :--------------: |
 | 菜单 |   菜单   |   显示所有功能   |
 | 必应每日 |   bing   |   必应每日壁纸   |
@@ -74,28 +73,28 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | req_demo   |   req_demo   |   测试传参功能   |
 | 测试 |   测试   | 测试文本以及图片功能 |
 
-## 适配平台
+## Supported Platforms
 
-|    平台    | 状态 |  备注  |
+| Platform | Status | Notes |
 | :--------: | :--: | :----: |
-| OneBot V11 |  ✅   | Napcat |
+| OneBot V11 | ✅ | Napcat |
 
-## 开发进度
+## Development Progress
 
-- [ ] 完善其他插件小功能
-- [x] 传参使用字典方法
-- [x] 增加管理员功能
-- [x] 增加启用/禁用功能
-- [x] 增加功能help支持
-- [x] 增加对图片的支持 
-- [x] 增强功能插件的触发方式
-- [x] 完成基础功能开发
+- [ ] Improve other plugin features
+- [x] Use dictionary method for parameter passing
+- [x] Add admin features
+- [x] Add enable/disable functionality
+- [x] Add help support for features
+- [x] Add image support
+- [x] Enhance plugin trigger methods
+- [x] Complete basic feature development
 
-### 更新历史
+### Update History
 
-- V1.0.2  正式版本发布并更新和风天气请求
-- V0.8.11 修复无法图片解析问题
+- V1.0.2  Official release and QWeather request update
+- V0.8.11 Fix image parsing issues
 
-## 问题反馈及功能开发
+## Feedback & Feature Development
 
-[![QQ群](https://img.shields.io/badge/QQ群-965312424-green)](https://qm.qq.com/cgi-bin/qm/qr?k=en97YqjfYaLpebd9Nn8gbSvxVrGdIXy2&jump_from=webapi&authKey=41BmkEjbGeJ81jJNdv7Bf5EDlmW8EHZeH7/nktkXYdLGpZ3ISOS7Ur4MKWXC7xIx)
+[![QQ Group](https://img.shields.io/badge/QQ群-965312424-green)](https://qm.qq.com/cgi-bin/qm/qr?k=en97YqjfYaLpebd9Nn8gbSvxVrGdIXy2&jump_from=webapi&authKey=41BmkEjbGeJ81jJNdv7Bf5EDlmW8EHZeH7/nktkXYdLGpZ3ISOS7Ur4MKWXC7xIx)
