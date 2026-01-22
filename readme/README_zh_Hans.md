@@ -66,7 +66,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | :--: | :------: | :--------------: |
 | 菜单 |   菜单   |   显示所有功能   |
 | 必应每日 |   bing   |   必应每日壁纸   |
-| 看妹妹   |   看妹妹   |   随机美女图片   |
+| 看妹妹   |   看妹妹(已归档)   |   随机美女图片   |
 | 摸头   |   摸头   |   摸头qq头像   |
 | kfc   |   kfc   |   随机疯狂星期四   |
 | 天气   |   天气   |   和风天气功能，需配置API密钥和API Host（每个开发者独立），[控制台](https://console.qweather.com/home?lang=zh)  |

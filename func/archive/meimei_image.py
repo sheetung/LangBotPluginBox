@@ -57,7 +57,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
     # 从request_dict中获取参数列表
     args = request_dict.get('args', [])
     
-    ssnum = 10  # 最大图片数量限制
+    ssnum = 1  # 最大图片数量限制
     n = 1  # 默认获取1张图片
     # 解析请求次数参数（支持 x10、10次 等格式）
     if args:

@@ -63,15 +63,15 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 
 | Feature | Trigger Command | Description |
 | :--: | :------: | :--------------: |
-| 菜单 |   菜单   |   显示所有功能   |
-| 必应每日 |   bing   |   必应每日壁纸   |
-| 看妹妹   |   看妹妹   |   随机美女图片   |
-| 摸头   |   摸头   |   摸头qq头像   |
-| kfc   |   kfc   |   随机疯狂星期四   |
-| 天气   |   天气   |   和风天气功能，需配置API密钥和API Host（每个开发者独立），[控制台](https://console.qweather.com/home?lang=zh)  |
-| 早报   |   早报   |   每日60s早报图片   |
-| req_demo   |   req_demo   |   测试传参功能   |
-| 测试 |   测试   | 测试文本以及图片功能 |
+| Menu | 菜单 | Display all features |
+| Bing Daily | bing | Bing daily wallpaper |
+| Look Beauty | 看妹妹(archive) | Random beauty images |
+| Pat Head | 摸头 | Pat QQ avatar |
+| KFC | kfc | Random KFC Thursday jokes |
+| Weather | 天气 | QWeather function, requires API key and API Host configuration (independent for each developer), [Console](https://console.qweather.com/home?lang=zh) |
+| Morning News | 早报 | Daily 60s morning news image |
+| req_demo | req_demo | Test parameter passing |
+| Test | 测试 | Test text and image features |
 
 ## Supported Platforms
 
