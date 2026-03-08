@@ -16,17 +16,19 @@ def get_info() -> Dict[str, str]:
         "usage": "摸头 @好友 或者 摸头 @1001 或者 摸头"
     }
 
-async def get_motou_image_url(qq=None):
+async def get_motou_image_url(qq=None, bg_color=None):
     """获取摸头图片链接"""
-    api_url = f"https://uapis.cn/api/mt?qq={qq}"
-    
+    api_url = f"https://uapis.cn/api/v1/image/motou?qq={qq}"
+    if bg_color:
+        api_url += f"&bg_color={bg_color}"
+    # print(f'api_url={api_url}')
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url)
             if response.status_code == 200:
                 return api_url
             else:
-                return "获取摸头图片失败\n输入的格式是:摸头@好友 或者摸头 1001"
+                return "获取摸头图片失败\n输入的格式是:摸头@好友 或者摸头 @1001"
     except Exception as e:
         return "发生错误喵~"
 
@@ -46,6 +48,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 
     # 获取参数中的请求者QQ号
     qq_number = '1001'  # 默认值
+    bg_color = None
     
     # 首先从args_text中尝试获取ID（去除@符号）
     args_text = request_dict.get('args_text', '')
@@ -56,9 +59,10 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
         sender_id = request_dict.get('sender_id', '')
         if sender_id:
             qq_number = sender_id
+    print(f'qq_number={qq_number}')
 
     # 获取摸头图片链接
-    motou_image_url = await get_motou_image_url(qq=qq_number)
+    motou_image_url = await get_motou_image_url(qq=qq_number, bg_color=bg_color)
     
     # 检查是否获取成功
     if motou_image_url.startswith("http"):
