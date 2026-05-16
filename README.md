@@ -66,7 +66,7 @@ async def execute(event_context: context.EventContext, request_dict) -> str:
 | Menu | 菜单 | Display all features |
 | Bing Daily | bing | Bing daily wallpaper |
 | Look Beauty | 看妹妹(archive) | Random beauty images |
-| Pat Head | 摸头 | Pat QQ avatar |
+| Pat Head | 摸头(archive) | Pat QQ avatar |
 | KFC | kfc | Random KFC Thursday jokes |
 | Weather | 天气 | QWeather function, requires API key and API Host configuration (independent for each developer), [Console](https://console.qweather.com/home?lang=zh) |
 | Morning News | 早报 | Daily 60s morning news image |
